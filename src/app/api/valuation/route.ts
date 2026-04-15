@@ -47,7 +47,8 @@ Respond ONLY with a valid JSON object in this exact shape, no markdown, no expla
 }`
 
   const result = await model.generateContent(prompt)
-  const text = result.response.text().trim()
+  const raw = result.response.text().trim()
+  const text = raw.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```$/, '').trim()
 
   const parsed: ValuationResult = JSON.parse(text)
   return NextResponse.json(parsed)

@@ -1,36 +1,105 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PropFind — Property Search Platform
 
-## Getting Started
+A real estate web application for browsing, filtering, and valuing properties across Malaysia. Built as a frontend portfolio project targeting PropTech roles.
 
-First, run the development server:
+**Live demo:** [propfind.vercel.app](https://propfind.vercel.app)
+
+---
+
+## Features
+
+- **Property listings** — grid view with real-time filtering by price, bedrooms, and property type
+- **Interactive map** — Leaflet map with property pin markers and popup previews, synced with active filters
+- **Property detail pages** — statically generated pages with full specs, amenities, and imagery
+- **AI valuation tool** — enter an address and property details to receive an AI-estimated market value with price range and reasoning
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Framework | Next.js 14 (App Router) |
+| Language | TypeScript (strict mode) |
+| Styling | Tailwind CSS |
+| State management | Zustand |
+| Map | React-Leaflet + OpenStreetMap |
+| Icons | Lucide React |
+| AI | Google Gemini API (gemini-1.5-flash) |
+| Deployment | Vercel |
+
+---
+
+## Architecture & Engineering Decisions
+
+### Atomic Design
+Components are organised into atoms → molecules → organisms, each folder with a barrel `index.ts` export. This keeps imports clean and boundaries explicit.
+
+```
+src/components/
+├── atoms/        # Button, Badge, Input, Select, Skeleton
+├── molecules/    # PropertyCard
+└── organisms/    # FilterPanel, PropertyGrid, MapView, ValuationForm, Navbar
+```
+
+### Server vs Client Components
+Server components are the default. Client components (`'use client'`) are used only where required:
+- `FilterPanel` — reads user input, writes to Zustand store
+- `PropertyGrid` — reads Zustand store to render filtered results
+- `MapView` — Leaflet requires browser APIs, loaded via `dynamic()` with `ssr: false`
+- `ValuationForm` — user interaction + fetch to API route
+
+### AI Valuation API Route
+The Gemini API key is never exposed to the browser. All AI requests go through a Next.js API route (`/api/valuation`) which handles the Gemini call server-side and returns structured JSON.
+
+### Performance
+- `next/image` with `fill` and `sizes` on all property images
+- Map component lazy-loaded via `next/dynamic`
+- `loading.tsx` skeleton screens on all routes
+- Property detail pages statically generated at build time via `generateStaticParams`
+
+### SEO
+- Per-page metadata via Next.js Metadata API
+- Open Graph tags on layout
+- Auto-generated `sitemap.xml` and `robots.txt`
+
+---
+
+## Project Structure
+
+```
+src/
+├── app/
+│   ├── api/valuation/     # Gemini API route
+│   ├── property/[id]/     # Static property detail pages
+│   ├── valuation/         # AI valuation page
+│   └── layout.tsx         # Root layout with metadata
+├── components/            # Atomic design components
+├── data/                  # Mock property JSON
+├── hooks/                 # useValuation custom hook
+├── lib/                   # filterProperties, formatPrice, cn utilities
+├── store/                 # Zustand filter store
+└── types/                 # Property and FilterState types
+```
+
+---
+
+## Running Locally
+
+```bash
+npm install
+```
+
+Create `.env.local`:
+
+```
+GEMINI_API_KEY=your_gemini_api_key_here
+```
+
+Get a free key at [aistudio.google.com](https://aistudio.google.com).
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Open [http://localhost:3000](http://localhost:3000).
