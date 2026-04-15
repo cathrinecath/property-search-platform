@@ -2,7 +2,7 @@
 
 A real estate web application for browsing, filtering, and valuing properties across Malaysia. Built as a frontend portfolio project targeting PropTech roles.
 
-**Live demo:** [propfind.vercel.app](https://propfind.vercel.app)
+**Live demo:** [property-search-platform.vercel.app](https://property-search-platform.vercel.app)
 
 ---
 

@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next'
 import propertiesData from '@/data/properties.json'
 
-const BASE_URL = 'https://propfind.vercel.app'
+const BASE_URL = 'https://property-search-platform.vercel.app'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const propertyUrls = propertiesData.map((p) => ({
