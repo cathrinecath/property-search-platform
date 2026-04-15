@@ -46,10 +46,14 @@ Respond ONLY with a valid JSON object in this exact shape, no markdown, no expla
   "reasoning": "<2-3 sentence explanation>"
 }`
 
-  const result = await model.generateContent(prompt)
-  const raw = result.response.text().trim()
-  const text = raw.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```$/, '').trim()
-
-  const parsed: ValuationResult = JSON.parse(text)
-  return NextResponse.json(parsed)
+  try {
+    const result = await model.generateContent(prompt)
+    const raw = result.response.text().trim()
+    const text = raw.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```$/, '').trim()
+    const parsed: ValuationResult = JSON.parse(text)
+    return NextResponse.json(parsed)
+  } catch (err) {
+    console.error('Valuation error:', err)
+    return NextResponse.json({ error: String(err) }, { status: 500 })
+  }
 }
